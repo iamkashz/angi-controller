@@ -28,6 +28,10 @@ This is a custom controller built for take home assignment from Angi.
 
 ## Controller
 
+I have pushed `linux/amd64` & `linux/arm64` (for Apple Silicon) builds to
+Dockerhub ([link](https://hub.docker.com/repository/docker/iamkashz/angi-controller)) for quick image fetch to deploy
+the controller.
+
 1. Deploy Custom Resource CRD:
 
 ```bash
@@ -103,11 +107,33 @@ pip install -r requirements.txt
 kopf run kopf-controller.py
 ```
 
-# Tests
+## Tests
 
 ```bash
 python3 -m unittest -v tests/unit_test_controller.py
 python3 -m unittest -v tests/integration_test_controller.py
+```
+
+# Cleanup Steps
+
+1. Identify all resources for `myappresources.my.api.group` and delete them
+
+```bash
+kubectl get myappresources.my.api.group
+kubectl delete myappresources.my.api.group <customAppName>
+```
+
+2. Clean up controller
+
+```bash
+kubectl delete deployment kopf-controller
+kubectl delete -f kopf-controller-role.yaml
+```
+
+3. Delete CRD
+
+```bash
+kubectl delete -f myappresource-crd.yaml
 ```
 
 # Controller details
@@ -117,21 +143,18 @@ responds. There are 3 major responses:
 
 1. When a new customApp is deployed (`@kopf.on.create`), the controller creates the podinfo deployment and service.
    If `redis.enabled=true`, it creates the redis deployment and service and ensures proper env_vars are configured.
-2. When an existing customApp is updated / patched (`@kopf.on.update`), the controller attempts to figure out what has between the
-   old and new spec. The important check is the redis check to ensure proper values env_vars in the podinfo deployment
-3. When a customApp is deleted (`@kopf.on.delete`), the controller deletes any existing (podinfo+redis) deployment and service.
+2. When an existing customApp is updated / patched (`@kopf.on.update`), the controller attempts to figure out what has
+   changed between the
+   old and new spec. The redis check is to ensure proper values env_vars in the podinfo deployment
+3. When a customApp is deleted (`@kopf.on.delete`), the controller deletes any existing (podinfo+redis) deployment and
+   service.
 
 # References
 
 - [Kopf: Kubernetes Operators Framework](https://kopf.readthedocs.io/en/stable/)
 - [Python Kubernetes-client](https://github.com/kubernetes-client/python)
 - [Python unittest](https://docs.python.org/3/library/unittest.html)
-
-## Information
-
-I have pushed both `linux/amd64` & `linux/arm64` (for Apple Silicon) builds to
-Dockerhub ([link](https://hub.docker.com/repository/docker/iamkashz/angi-controller)) for quick image fetch.
-
-
-
-
+- [Kubernetes Operators](https://developers.redhat.com/articles/2021/06/22/kubernetes-operators-101-part-2-how-operators-work#the_structure_of_kubernetes_operators)
+- [Operator Pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
+- [Controller reconcile function](https://kubebyexample.com/learning-paths/operator-framework/operator-sdk-go/controller-reconcile-function)
+- [Controllers and Reconciliation](https://cluster-api.sigs.k8s.io/developer/providers/implementers-guide/controllers_and_reconciliation.html)
