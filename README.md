@@ -114,6 +114,29 @@ python3 -m unittest -v tests/unit_test_controller.py
 python3 -m unittest -v tests/integration_test_controller.py
 ```
 
+## Interacting with the podinfo container
+
+1. Command to port forward using `kubectl` on 8080
+
+```bash
+kubectl port-forward svc/<customAppName>-podinfo-svc 8080:8080
+```
+
+2. Access http://localhost:8080 via browser to view the podinfo container
+
+3. Use `helper.py` to interact with redis store
+```bash
+> python3 helper.py
+
+POST key value
+
+PUT key value
+
+GET key
+
+QUIT
+```
+
 # Cleanup Steps
 
 1. Identify all resources for `myappresources.my.api.group` and delete them
