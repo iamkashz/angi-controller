@@ -1,0 +1,17 @@
+apiVersion: my.api.group/v1alpha1
+kind: MyAppResource
+metadata:
+  name: angi-take-home
+spec:
+  replicaCount: 2
+  resources:
+    memoryLimit: 64Mi
+    cpuRequest: 100m
+  image:
+    repository: ghcr.io/stefanprodan/podinfo
+    tag: latest
+  ui:
+    color: "#a33018"
+    message: "k4shz-angi-submission"
+  redis:
+    enabled: true

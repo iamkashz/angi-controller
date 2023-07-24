@@ -1,0 +1,28 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kopf-controller-role
+rules:
+- apiGroups: ["my.api.group"]
+  resources: ["myappresources"]
+  verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
+- apiGroups: ["apps", ""]
+  resources: ["deployments", "services"]
+  verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kopf-controller-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kopf-controller-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
